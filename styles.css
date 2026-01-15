@@ -1,0 +1,270 @@
+:root {
+	--bg: #b59095;
+
+	/* accent colors */
+	--rose-red: #c85b6a;
+	--rose-purple: #8b5f8f;
+	--rose-green: #6f9a86;
+
+	--paper: rgba(255, 255, 255, 0.18);
+	--ink: rgba(255, 255, 255, 0.92);
+	--ink-soft: rgba(255, 255, 255, 0.75);
+	--edge: rgba(0, 0, 0, 0.18);
+	--shadow: rgba(0, 0, 0, 0.28);
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	height: 100%;
+}
+
+body {
+	margin: 0;
+	font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+	background: var(--bg);
+	color: var(--ink);
+}
+
+.stage {
+	min-height: 100vh;
+	padding: 24px;
+	display: grid;
+	place-items: center;
+}
+
+/* Card layout: desktop = left-centered with room around; mobile = centered */
+.card {
+	width: min(1040px, 100%);
+	display: grid;
+	gap: 18px;
+	align-items: start;
+
+	/* default (desktop-ish) */
+	grid-template-columns: 1.25fr 0.75fr;
+	grid-template-rows: auto auto auto;
+	grid-template-areas:
+		"top top"
+		"projection right"
+		"bottom bottom";
+
+	/* push the whole card a bit left so the projection feels left-centered */
+	transform: translateX(-6%);
+}
+
+.top {
+	grid-area: top;
+	padding: 14px 16px;
+	background: var(--paper);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	border-radius: 16px;
+	backdrop-filter: blur(8px);
+}
+
+.title {
+	margin: 0;
+	font-size: clamp(28px, 3vw, 40px);
+	letter-spacing: 0.3px;
+}
+
+.subtitle {
+	margin: 6px 0 0;
+	color: var(--ink-soft);
+}
+
+.projection {
+	grid-area: projection;
+	position: relative;
+	padding: 14px;
+	border-radius: 18px;
+	background: rgba(0, 0, 0, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.16);
+	box-shadow: 0 18px 50px var(--shadow);
+}
+
+/* Horizontal rectangle projection surface */
+.projection-frame {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	border-radius: 14px;
+	overflow: hidden;
+	background: #111;
+	filter: saturate(1.05);
+}
+
+.slide-layer {
+	position: absolute;
+	inset: 0;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-color: #000;
+	background-position: center;
+	opacity: 0;
+	transform: scale(1);
+	transition: opacity 1200ms ease-in-out;
+	will-change: opacity, transform;
+
+	animation-name: kenburns;
+	animation-timing-function: ease-in-out;
+	animation-fill-mode: both;
+	animation-iteration-count: 1;
+}
+
+.slide-layer.is-active {
+	opacity: 1;
+}
+
+@keyframes kenburns {
+	0% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(2);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+/* Faded edges / projection vignette */
+.projection-vignette {
+	position: absolute;
+	inset: 14px;
+	border-radius: 14px;
+	pointer-events: none;
+	background:
+		radial-gradient(140% 120% at 50% 50%, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.55) 100%),
+		linear-gradient(to bottom, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0) 22%, rgba(0, 0, 0, 0) 78%, rgba(0, 0, 0, 0.35));
+	mix-blend-mode: multiply;
+}
+
+.controls {
+	margin-top: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+}
+
+.btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 14px;
+	border-radius: 999px;
+	border: 1px solid rgba(255, 255, 255, 0.26);
+	background: rgba(255, 255, 255, 0.12);
+	color: var(--ink);
+	cursor: pointer;
+	user-select: none;
+	font-weight: 600;
+	letter-spacing: 0.2px;
+}
+
+.btn:focus-visible {
+	outline: 3px solid rgba(255, 255, 255, 0.4);
+	outline-offset: 3px;
+}
+
+.btn-dot {
+	width: 10px;
+	height: 10px;
+	border-radius: 999px;
+	background: var(--rose-green);
+	box-shadow: 0 0 0 6px rgba(111, 154, 134, 0.22);
+}
+
+.btn[data-state="paused"] .btn-dot {
+	background: var(--rose-red);
+	box-shadow: 0 0 0 6px rgba(200, 91, 106, 0.22);
+}
+
+.status {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.pill {
+	width: 12px;
+	height: 12px;
+	border-radius: 999px;
+	opacity: 0.9;
+}
+
+.pill-red {
+	background: var(--rose-red);
+}
+
+.pill-purple {
+	background: var(--rose-purple);
+}
+
+.pill-green {
+	background: var(--rose-green);
+}
+
+.counter {
+	margin-left: 6px;
+	color: var(--ink-soft);
+	font-variant-numeric: tabular-nums;
+}
+
+.right {
+	grid-area: right;
+	padding: 14px 16px;
+	background: var(--paper);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	border-radius: 16px;
+	backdrop-filter: blur(8px);
+	min-height: 100%;
+}
+
+.note-title {
+	margin: 0;
+	font-size: 14px;
+	color: var(--ink-soft);
+}
+
+.note-body {
+	margin: 8px 0 0;
+	font-size: 18px;
+	font-weight: 700;
+}
+
+.bottom {
+	grid-area: bottom;
+	padding: 10px 16px;
+	background: rgba(255, 255, 255, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.16);
+	border-radius: 16px;
+}
+
+.small {
+	margin: 0;
+	color: var(--ink-soft);
+}
+
+/* Mobile: centered with room top and bottom only (no right column) */
+@media (max-width: 820px) {
+	.card {
+		grid-template-columns: 1fr;
+		grid-template-areas:
+			"top"
+			"projection"
+			"bottom";
+		transform: none;
+	}
+
+	.right {
+		display: none;
+	}
+
+	.stage {
+		padding: 18px;
+	}
+}

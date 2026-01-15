@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Birthday Gift Card</title>
+		<link rel="stylesheet" href="styles.css" />
+	</head>
+	<body>
+		<main class="stage" aria-label="Birthday gift card">
+			<div class="card">
+				<header class="top" aria-label="Top space">
+					<h1 class="title">Happy Birthday</h1>
+					<p class="subtitle">A little projection just for you</p>
+				</header>
+
+				<section class="projection" aria-label="Projection slideshow">
+					<div class="projection-frame" aria-label="Slideshow image">
+						<div class="slide-layer slide-a" aria-hidden="true"></div>
+						<div class="slide-layer slide-b" aria-hidden="true"></div>
+					</div>
+					<div class="projection-vignette" aria-hidden="true"></div>
+
+					<div class="controls" aria-label="Slideshow controls">
+						<button id="toggle" class="btn" type="button" aria-pressed="true">
+							<span class="btn-dot" aria-hidden="true"></span>
+							<span id="toggleText">Pause</span>
+						</button>
+
+						<div class="status" aria-label="Slideshow status">
+							<span class="pill pill-red" aria-hidden="true"></span>
+							<span class="pill pill-purple" aria-hidden="true"></span>
+							<span class="pill pill-green" aria-hidden="true"></span>
+							<span id="counter" class="counter" aria-live="polite">1 / 5</span>
+						</div>
+					</div>
+				</section>
+
+				<aside class="right" aria-label="Right space">
+					<div class="note">
+						<p class="note-title">To:</p>
+						<p class="note-body">Someone special</p>
+					</div>
+				</aside>
+
+				<footer class="bottom" aria-label="Bottom space">
+					<p class="small">Tap Play/Pause to control the show.</p>
+				</footer>
+			</div>
+		</main>
+
+		<script src="script.js"></script>
+	</body>
+</html>
