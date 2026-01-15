@@ -144,6 +144,13 @@ function start() {
 	toggle.removeAttribute('data-state');
 	setPlayState('running');
 	scheduleNext(remainingMs);
+
+	// Play background audio when slideshow starts
+	if (bgAudio) {
+		bgAudio.play().catch(() => {
+			// ignore autoplay failures
+		});
+	}
 }
 
 function stop() {
@@ -158,6 +165,11 @@ function stop() {
 		timeoutId = null;
 	}
 	remainingMs = Math.max(0, nextDueAt - performance.now());
+
+	// Pause background audio when slideshow pauses/stops
+	if (bgAudio) {
+		try { bgAudio.pause(); } catch (e) { /* ignore */ }
+	}
 }
 
 function togglePlay() {
