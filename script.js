@@ -4,6 +4,9 @@ const layerB = document.querySelector('.slide-b');
 const toggle = document.getElementById('toggle');
 const toggleText = document.getElementById('toggleText');
 const counter = document.getElementById('counter');
+const cover = document.getElementById('cover');
+const openBtn = document.getElementById('openBtn');
+const bgAudio = document.getElementById('bgAudio');
 
 // Images from: asserts/images/ (shrunk set)
 // NOTE: Browsers cannot list folders at runtime, so keep an explicit list generated from the workspace.
@@ -31,7 +34,11 @@ function shuffleArray(array) {
 	}
 }
 
-shuffleArray(slides);
+function reshuffleForNewLoop() {
+	shuffleArray(slides);
+}
+
+reshuffleForNewLoop();
 
 let index = 0;
 let isPlaying = true;
@@ -83,6 +90,10 @@ function advance() {
 
 	const nextIndex = index + 1;
 	if (nextIndex >= slides.length) {
+		// Loop: reshuffle and start again from first.
+		reshuffleForNewLoop();
+		index = 0;
+		showInitial();
 		return;
 	}
 
@@ -127,11 +138,6 @@ function scheduleNext(ms) {
 function start() {
 	if (!slides.length) return;
 	if (isPlaying && timeoutId) return;
-	// If we've finished the show (at last slide and not playing), restart from beginning.
-	if (index === slides.length - 1 && !isPlaying && !timeoutId) {
-		index = 0;
-		showInitial();
-	}
 	isPlaying = true;
 	toggle.setAttribute('aria-pressed', 'true');
 	toggleText.textContent = 'Pause';
@@ -161,6 +167,23 @@ function togglePlay() {
 
 toggle.addEventListener('click', togglePlay);
 
+function openCoverAndStart() {
+	if (cover) cover.classList.add('is-hidden');
+	// Start audio on a user gesture (required by most browsers).
+	if (bgAudio) {
+		bgAudio.currentTime = 0;
+		bgAudio.play().catch(() => {
+			// Autoplay might still be blocked; user can press play/pause button afterward.
+		});
+	}
+	start();
+}
+
+if (openBtn) {
+	openBtn.addEventListener('click', openCoverAndStart);
+}
+
 preload(slides);
 showInitial();
-start();
+// Do not auto-start until user opens the cover.
+stop();

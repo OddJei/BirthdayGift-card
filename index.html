@@ -7,7 +7,18 @@
 		<link rel="stylesheet" href="styles.css" />
 	</head>
 	<body>
+		<audio id="bgAudio" src="asserts/audio/Search.mp3" preload="auto" loop></audio>
+
 		<main class="stage" aria-label="Birthday gift card">
+			<section class="cover" id="cover" aria-label="Gift card cover">
+				<div class="cover-panel">
+					<p class="cover-kicker">Welcome</p>
+					<h2 class="cover-title">Open your Birthday Gift Card</h2>
+					<p class="cover-subtitle">Tap to start the music and slideshow.</p>
+					<button id="openBtn" class="btn cover-btn" type="button">Open</button>
+				</div>
+			</section>
+
 			<div class="card">
 				<header class="top" aria-label="Top space">
 					<h1 class="title">Happy Birthday</h1>

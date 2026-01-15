@@ -34,6 +34,55 @@ body {
 	padding: 24px;
 	display: grid;
 	place-items: center;
+	position: relative;
+}
+
+/* Landing cover overlay */
+.cover {
+	position: fixed;
+	inset: 0;
+	display: grid;
+	place-items: center;
+	padding: 24px;
+	background: rgba(0, 0, 0, 0.25);
+	backdrop-filter: blur(8px);
+	z-index: 50;
+}
+
+.cover.is-hidden {
+	display: none;
+}
+
+.cover-panel {
+	width: min(560px, 100%);
+	padding: 20px 18px;
+	border-radius: 18px;
+	background: var(--paper);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	box-shadow: 0 18px 50px var(--shadow);
+	text-align: center;
+}
+
+.cover-kicker {
+	margin: 0;
+	color: var(--ink-soft);
+	letter-spacing: 0.6px;
+	text-transform: uppercase;
+	font-size: 12px;
+}
+
+.cover-title {
+	margin: 10px 0 0;
+	font-size: clamp(22px, 3.2vw, 32px);
+}
+
+.cover-subtitle {
+	margin: 10px 0 0;
+	color: var(--ink-soft);
+}
+
+.cover-btn {
+	margin-top: 14px;
 }
 
 /* Card layout: desktop = left-centered with room around; mobile = centered */
