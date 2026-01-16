@@ -48,6 +48,27 @@ let timeoutId = null;
 let nextDueAt = 0;
 let remainingMs = SLIDE_MS;
 
+// Transition weights (percent-like weights). 'flip' will be excluded on small screens.
+const TRANSITION_WEIGHTS = {
+	'fade': 30,
+	'slide-left': 20,
+	'slide-right': 20,
+	'glow': 15,
+	'spin': 10,
+	'flip': 5,
+};
+
+function pickTransition() {
+	const isMobile = window.matchMedia('(max-width: 820px)').matches;
+	const pool = [];
+	for (const [t, w] of Object.entries(TRANSITION_WEIGHTS)) {
+		if (isMobile && t === 'flip') continue; // exclude 3D flip on mobile
+		for (let i = 0; i < w; i++) pool.push(t);
+	}
+	if (pool.length === 0) return 'fade';
+	return pool[Math.floor(Math.random() * pool.length)];
+}
+
 function setLayerImage(layer, url) {
 	layer.style.backgroundImage = `url("${url}")`;
 	// Force a new animation for the Ken Burns effect.
@@ -102,13 +123,37 @@ function advance() {
 	const incoming = isAActive ? layerB : layerA;
 	const outgoing = isAActive ? layerA : layerB;
 
+	// choose a random weighted transition for this swap
+	const choice = pickTransition();
+	// clean previous transient classes
+	['enter', 'exit', ...TRANSITIONS.map(t => `t-${t}`)].forEach((c) => {
+		incoming.classList.remove(c);
+		outgoing.classList.remove(c);
+	});
+
+	incoming.classList.add('enter', `t-${choice}`);
+	outgoing.classList.add('exit', `t-${choice}`);
+
+	// set transition duration variable to align with FADE_MS
+	incoming.style.setProperty('--trans-dur', `${FADE_MS}ms`);
+	outgoing.style.setProperty('--trans-dur', `${FADE_MS}ms`);
+
 	setLayerImage(incoming, nextUrl);
+	// Ensure incoming starts hidden/positioned then becomes active for enter animation
 	incoming.classList.remove('is-active');
-	// Ensure opacity transition triggers.
+
 	requestAnimationFrame(() => {
 		incoming.classList.add('is-active');
 		outgoing.classList.remove('is-active');
 	});
+
+	// clean up transient classes after transition completes
+	window.setTimeout(() => {
+		incoming.classList.remove('enter');
+		outgoing.classList.remove('exit');
+		incoming.classList.remove(`t-${choice}`);
+		outgoing.classList.remove(`t-${choice}`);
+	}, FADE_MS + 60);
 
 	frame.setAttribute('aria-label', `Slide ${index + 1}`);
 	updateCounter();
@@ -188,6 +233,7 @@ function openCoverAndStart() {
 			// Autoplay might still be blocked; user can press play/pause button afterward.
 		});
 	}
+	// start the looping slideshow
 	start();
 }
 

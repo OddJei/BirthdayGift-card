@@ -154,7 +154,7 @@ body {
 	background-position: center;
 	opacity: 0;
 	transform: scale(1);
-	transition: opacity 1200ms ease-in-out;
+	transition: opacity var(--trans-dur, 1200ms) ease-in-out, transform var(--trans-dur, 1200ms) cubic-bezier(.2,.9,.3,1.02);
 	will-change: opacity, transform;
 
 	animation-name: kenburns;
@@ -177,6 +177,52 @@ body {
 	100% {
 		transform: scale(1);
 	}
+}
+
+/* Transition variants */
+.slide-layer.enter { opacity: 0; }
+.slide-layer.exit { opacity: 1; }
+
+/* Fade (soft crossfade) - default behavior uses opacity only */
+.t-fade .slide-layer.enter { transform: scale(1.02); }
+.t-fade .slide-layer.enter.is-active { transform: scale(1); }
+.t-fade .slide-layer.exit { transform: scale(1); }
+.t-fade .slide-layer.exit.is-active { transform: scale(1); }
+
+/* Slide-in from left */
+.t-slide-left .slide-layer.enter { transform: translateX(14%) scale(1.04); }
+.t-slide-left .slide-layer.enter.is-active { transform: translateX(0) scale(1); }
+.t-slide-left .slide-layer.exit { transform: translateX(0) scale(1); }
+.t-slide-left .slide-layer.exit.is-active { transform: translateX(-8%) scale(0.99); opacity: 0; }
+
+/* Slide-in from right */
+.t-slide-right .slide-layer.enter { transform: translateX(-14%) scale(1.04); }
+.t-slide-right .slide-layer.enter.is-active { transform: translateX(0) scale(1); }
+.t-slide-right .slide-layer.exit { transform: translateX(0) scale(1); }
+.t-slide-right .slide-layer.exit.is-active { transform: translateX(8%) scale(0.99); opacity: 0; }
+
+/* Glow / color pop on enter */
+.t-glow .slide-layer.enter { filter: saturate(0.95) brightness(0.98); box-shadow: none; }
+.t-glow .slide-layer.enter.is-active { filter: saturate(1.25) brightness(1.05); box-shadow: 0 18px 40px rgba(255,180,200,0.18); }
+.t-glow .slide-layer.exit.is-active { filter: saturate(1) brightness(1); opacity: 0; }
+
+/* Spin + scale subtle */
+.t-spin .slide-layer.enter { transform: rotate(-6deg) scale(1.06); }
+.t-spin .slide-layer.enter.is-active { transform: rotate(0deg) scale(1); }
+.t-spin .slide-layer.exit.is-active { transform: rotate(6deg) scale(0.98); opacity: 0; }
+
+/* 3D flip */
+.projection-frame { perspective: 1200px; }
+.t-flip .slide-layer { backface-visibility: hidden; transform-origin: center; }
+.t-flip .slide-layer.enter { transform: rotateY(-90deg) scale(1.02); }
+.t-flip .slide-layer.enter.is-active { transform: rotateY(0deg) scale(1); }
+.t-flip .slide-layer.exit.is-active { transform: rotateY(90deg) scale(0.98); opacity: 0; }
+
+/* confetti/sparkle overlay placeholder (trigger via JS) */
+.confetti {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
 }
 
 /* Faded edges / projection vignette */
