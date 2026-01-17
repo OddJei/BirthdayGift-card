@@ -7,6 +7,9 @@ const counter = document.getElementById('counter');
 const cover = document.getElementById('cover');
 const openBtn = document.getElementById('openBtn');
 const bgAudio = document.getElementById('bgAudio');
+const subtitleOverlay = document.querySelector('.subtitle-overlay');
+const subtitleText = document.querySelector('.subtitle-overlay-text');
+const mobileQuery = window.matchMedia('(max-width: 820px)');
 
 // Images from: asserts/images/ (shrunk set)
 // NOTE: Browsers cannot list folders at runtime, so keep an explicit list generated from the workspace.
@@ -65,6 +68,24 @@ const DISPLAY_STYLES = [
 
 let lastDisplayStyle = null;
 
+// Letter content, split into chunks for mobile subtitles
+const SUBTITLE_CHUNKS = [
+	'Dear Sister, Dear Mother, Dear Aunt Thressa,',
+	'We write to you with love and joy.',
+	'Your life has always been a light to us, and today we celebrate that light.',
+	'You show us what it means to live with care and strength.',
+	'Through your words and actions, you have guided us, teaching us to stand together, to love one another, and to keep faith even in hard times.',
+	'Your example is now a path for the younger ones in our family, who look to you for wisdom and hope.',
+	'On this special day, we celebrate the gift of your life and the future that grows from your guidance.',
+	'The children and the next generation carry your lessons in their hearts and will walk with courage because you have shown them the way.',
+	'May this birthday remind you that your life is a blessing to us all, and that your love will continue to shape our family for years to come. With love, your family.',
+];
+
+let subtitleChunkIndex = 0;
+let subtitleCharIndex = 0;
+let subtitleTimerId = null;
+let subtitleLoopStarted = false;
+
 // Transition weights (percent-like weights). 'flip' will be excluded on small screens.
 const TRANSITION_WEIGHTS = {
 	'fade': 30,
@@ -74,6 +95,39 @@ const TRANSITION_WEIGHTS = {
 	'spin': 10,
 	'flip': 5,
 };
+
+function setupSubtitleForCurrentSlide() {
+	if (!subtitleText || !SUBTITLE_CHUNKS.length) return;
+	subtitleChunkIndex = index % SUBTITLE_CHUNKS.length;
+	subtitleCharIndex = 0;
+	subtitleText.textContent = '';
+}
+
+function clearSubtitleTimer() {
+	if (subtitleTimerId) {
+		window.clearTimeout(subtitleTimerId);
+		subtitleTimerId = null;
+	}
+}
+
+function typeNextSubtitleChar() {
+	if (!subtitleText || !mobileQuery.matches) return;
+	if (!isPlaying) return;
+	const full = SUBTITLE_CHUNKS[subtitleChunkIndex] || '';
+	if (subtitleCharIndex >= full.length) return;
+	subtitleText.textContent += full.charAt(subtitleCharIndex++);
+	const delay = Math.max(30, SLIDE_MS / Math.max(20, full.length));
+	subtitleTimerId = window.setTimeout(typeNextSubtitleChar, delay);
+}
+
+function startSubtitleTypingIfNeeded() {
+	if (!subtitleText || !mobileQuery.matches) return;
+	if (!isPlaying) return;
+	const full = SUBTITLE_CHUNKS[subtitleChunkIndex] || '';
+	if (!full.length || subtitleCharIndex >= full.length) return;
+	clearSubtitleTimer();
+	typeNextSubtitleChar();
+}
 
 function pickDisplayStyle() {
 	// Simple random pick, avoiding repeating the exact last style
@@ -88,7 +142,7 @@ function pickDisplayStyle() {
 }
 
 function pickTransition() {
-	const isMobile = window.matchMedia('(max-width: 820px)').matches;
+	const isMobile = mobileQuery.matches;
 	const pool = [];
 	for (const [t, w] of Object.entries(TRANSITION_WEIGHTS)) {
 		if (isMobile && t === 'flip') continue; // exclude 3D flip on mobile
@@ -162,6 +216,11 @@ function advance() {
 		reshuffleForNewLoop();
 		index = 0;
 		showInitial();
+		subtitleLoopStarted = false;
+		if (mobileQuery.matches) {
+			setupSubtitleForCurrentSlide();
+			startSubtitleTypingIfNeeded();
+		}
 		return;
 	}
 
@@ -207,6 +266,12 @@ function advance() {
 	frame.setAttribute('aria-label', `Slide ${index + 1}`);
 	updateCounter();
 	isAActive = !isAActive;
+
+	// Advance subtitle chunk in sync with slides on mobile
+	if (mobileQuery.matches) {
+		setupSubtitleForCurrentSlide();
+		startSubtitleTypingIfNeeded();
+	}
 }
 
 function scheduleNext(ms) {
@@ -232,6 +297,15 @@ function start() {
 	setPlayState('running');
 	scheduleNext(remainingMs);
 
+	// Start or resume mobile subtitles in sync with slideshow
+	if (mobileQuery.matches) {
+		if (!subtitleLoopStarted) {
+			subtitleLoopStarted = true;
+			setupSubtitleForCurrentSlide();
+		}
+		startSubtitleTypingIfNeeded();
+	}
+
 	// Play background audio when slideshow starts
 	if (bgAudio) {
 		bgAudio.play().catch(() => {
@@ -252,6 +326,7 @@ function stop() {
 		timeoutId = null;
 	}
 	remainingMs = Math.max(0, nextDueAt - performance.now());
+	clearSubtitleTimer();
 
 	// Pause background audio when slideshow pauses/stops
 	if (bgAudio) {
