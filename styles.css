@@ -299,6 +299,27 @@ body {
 	mix-blend-mode: multiply;
 }
 
+/* Mobile subtitle overlay over the projection (for the letter) */
+.subtitle-overlay {
+	position: absolute;
+	inset: 8px 12px;
+	display: none; /* shown only on mobile */
+	align-items: flex-end;
+	justify-content: center;
+	text-align: center;
+	pointer-events: none;
+	z-index: 3;
+}
+
+.subtitle-overlay-text {
+	max-width: 90%;
+	margin: 0;
+	font-size: clamp(12px, 3.4vw, 16px);
+	line-height: 1.4;
+	color: var(--ink-soft);
+	text-shadow: 0 2px 6px rgba(0, 0, 0, 0.85);
+}
+
 .controls {
 	margin-top: 12px;
 	display: flex;
@@ -419,6 +440,10 @@ body {
 
 	.right {
 		display: none;
+	}
+
+	.subtitle-overlay {
+		display: flex;
 	}
 
 	.stage {
