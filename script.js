@@ -71,14 +71,12 @@ let lastDisplayStyle = null;
 // Letter content, split into chunks for mobile subtitles
 const SUBTITLE_CHUNKS = [
 	'Dear Sister, Dear Mother, Dear Aunt Thressa,',
-	'We write to you with love and joy.',
-	'Your life has always been a light to us, and today we celebrate that light.',
-	'You show us what it means to live with care and strength.',
-	'Through your words and actions, you have guided us, teaching us to stand together, to love one another, and to keep faith even in hard times.',
-	'Your example is now a path for the younger ones in our family, who look to you for wisdom and hope.',
-	'On this special day, we celebrate the gift of your life and the future that grows from your guidance.',
-	'The children and the next generation carry your lessons in their hearts and will walk with courage because you have shown them the way.',
-	'May this birthday remind you that your life is a blessing to us all, and that your love will continue to shape our family for years to come. With love, your family.',
+	'We celebrate your life with love and joy.',
+	'You have shown us how to live with care and strength,',
+	'and your guidance lights the way for the younger ones in our family.',
+	'On this birthday, we thank God for you and the gift of your example.',
+	'May your love continue to shape our family for generations.',
+	'With love, your family.',
 ];
 
 let subtitleChunkIndex = 0;
